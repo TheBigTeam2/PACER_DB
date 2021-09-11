@@ -65,31 +65,53 @@ CREATE TABLE aluno_equipe (
    REFERENCES equipe(equ_id)
 );
 
-CREATE TABLE sprint (
-  spr_id BIGINT AUTO_INCREMENT,
-  spr_disciplina BIGINT,
-  spr_numero INTEGER NOT NULL,
-  spr_inicio DATE,
-  spr_fim DATE,
+CREATE TABLE projeto (
+  pro_id BIGINT AUTO_INCREMENT,
+  pro_equipe BIGINT,
   
-  CONSTRAINT PRIMARY KEY(spr_id),
-  CONSTRAINT fk_spr_disciplina FOREIGN KEY(spr_disciplina)
-   REFERENCES disciplina(dis_id)
+  CONSTRAINT PRIMARY KEY(pro_id),
+  CONSTRAINT fk_pro_equipe FOREIGN KEY(pro_equipe)
+   REFERENCES equipe(equ_id)
 );
+
+CREATE TABLE disciplina_projeto(
+  dip_disciplina BIGINT,
+  dip_projeto BIGINT,
+  
+  CONSTRAINT PRIMARY KEY(dip_disciplina, dip_projeto),
+  CONSTRAINT fk_dip_disciplina FOREIGN KEY(dip_disciplina)
+   REFERENCES disciplina(dis_id),
+  CONSTRAINT fk_dip_projeto FOREIGN KEY(dip_projeto)
+   REFERENCES projeto(pro_id)
+);
+
+CREATE TABLE projeto_equipe(
+  pre_projeto BIGINT,
+  pre_equipe BIGINT,
+
+  CONSTRAINT PRIMARY KEY(pre_projeto, pre_equipe),
+  CONSTRAINT fk_pre_projeto FOREIGN KEY(pre_projeto)
+   REFERENCES projeto(pro_id),
+  CONSTRAINT fk_pre_equipe FOREIGN KEY(pre_equipe)
+   REFERENCES equipe(equ_id)
+);   
 
 CREATE TABLE avaliacao (
   ava_id BIGINT AUTO_INCREMENT,
-  ava_sprint BIGINT,
+  ava_sprint INTEGER NOT NULL,
+  ava_inicio DATE NOT NULL,
+  ava_termino DATE NOT NULL,
   ava_avaliado BIGINT,
   ava_avaliador BIGINT,
+  ava_projeto BIGINT,
   
   CONSTRAINT PRIMARY KEY(ava_id),
-  CONSTRAINT fk_ava_sprint FOREIGN KEY(ava_sprint)
-   REFERENCES sprint(spr_id),
   CONSTRAINT fk_ava_avaliado FOREIGN KEY(ava_avaliado)
    REFERENCES usuario(usu_id),
   CONSTRAINT fk_ava_avaliador FOREIGN KEY(ava_avaliador)
-   REFERENCES usuario(usu_id)
+   REFERENCES usuario(usu_id),
+  CONSTRAINT fk_ava_projeto FOREIGN KEY(ava_projeto)
+   REFERENCES projeto(pro_id)
 );
 
 CREATE TABLE nota (
