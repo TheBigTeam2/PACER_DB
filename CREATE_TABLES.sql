@@ -117,7 +117,7 @@ CREATE TABLE avaliacao (
 CREATE TABLE nota (
   not_id BIGINT AUTO_INCREMENT,
   not_avaliacao BIGINT,
-  nor_criterio VARCHAR(32) NOT NULL,
+  not_criterio VARCHAR(32) NOT NULL,
   not_valor INTEGER NOT NULL,
   
   CONSTRAINT PRIMARY KEY(not_id),
