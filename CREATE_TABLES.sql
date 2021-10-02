@@ -4,103 +4,59 @@ use pacer;
 create user 'admin'@'localhost' identified by '4dm1n'
 grant select, insert, delete, update on pacer.* to user@'localhost';
 
+
 CREATE TABLE usuario (
   usu_id BIGINT AUTO_INCREMENT,
-  usu_nome VARCHAR(128),
+  usu_rg VARCHAR(13) NOT NULL,
+  usu_cpf VARCHAR(15) NOT NULL,
+  usu_nome VARCHAR(128) NOT NULL,
+  usu_auth VARCHAR(32) NOT NULL,
   
-  CONSTRAINT PRIMARY KEY(usu_id)
+  CONSTRAINT PRIMARY KEY(usu_id),
+  CONSTRAINT UK_USU_RG UNIQUE KEY(usu_rg),
+  CONSTRAINT UK_USU_CPF UNIQUE KEY(usu_cpf)
 );
 
-CREATE TABLE professor (
-  pro_id BIGINT AUTO_INCREMENT,
-  pro_cpf BIGINT NOT NULL,
-  pro_usuario BIGINT,
-
-  CONSTRAINT PRIMARY KEY(pro_id),
-  CONSTRAINT uk_pro_cpf UNIQUE(pro_cpf),
-  CONSTRAINT fk_pro_usuario FOREIGN KEY(pro_usuario)
-   REFERENCES USUARIO(usu_id)
-);
-
-CREATE TABLE aluno (
-  alu_id BIGINT AUTO_INCREMENT,
-  alu_ra BIGINT NOT NULL,
-  alu_usuario BIGINT,
-
-  CONSTRAINT PRIMARY KEY(alu_id),
-  CONSTRAINT uk_aluno_ra UNIQUE(alu_ra),
-  CONSTRAINT fk_alu_usuario FOREIGN KEY(alu_usuario)
-   REFERENCES USUARIO(usu_id)
-);
 
 CREATE TABLE disciplina (
   dis_id BIGINT AUTO_INCREMENT,
-  dis_semestre VARCHAR(32) NOT NULL,
-  dis_professor BIGINT,
   dis_nome VARCHAR(64) NOT NULL,
+  dis_curso VARCHAR(64) NOT NULL,
+  dis_periodo TINYINT,
+  dis_professor BIGINT,
   
   CONSTRAINT PRIMARY KEY(dis_id),
   CONSTRAINT fk_dis_professor FOREIGN KEY(dis_professor)
-   REFERENCES professor(pro_id)
+   REFERENCES usuario(usu_id)
 );
+
 
 CREATE TABLE equipe (
   equ_id BIGINT AUTO_INCREMENT,
-  equ_nome VARCHAR(128),
-  equ_disciplina BIGINT,
+  equ_nome VARCHAR(128) NOT NULL,
+  equ_disciplina BIGINT NOT NULL,
   
   CONSTRAINT PRIMARY KEY(equ_id),
   CONSTRAINT fk_equ_disciplina FOREIGN KEY(equ_disciplina)
-   REFERENCES disciplina(dis_id)
+    REFERENCES disciplina(dis_id)
 );
 
-CREATE TABLE aluno_equipe (
-  ale_aluno BIGINT,
-  ale_equipe BIGINT,
-  
-  CONSTRAINT PRIMARY KEY(ale_aluno, ale_equipe),
-  CONSTRAINT fk_ale_aluno FOREIGN KEY(ale_aluno)
-   REFERENCES aluno(alu_id),
-  CONSTRAINT fk_ale_equipe FOREIGN KEY(ale_equipe)
-   REFERENCES equipe(equ_id)
-);
 
 CREATE TABLE projeto (
   pro_id BIGINT AUTO_INCREMENT,
-  pro_equipe BIGINT,
+  pro_tema VARCHAR(128) NOT NULL,
+  pro_inicio DATE,
+  pro_termino DATE,
   
-  CONSTRAINT PRIMARY KEY(pro_id),
-  CONSTRAINT fk_pro_equipe FOREIGN KEY(pro_equipe)
-   REFERENCES equipe(equ_id)
+  CONSTRAINT PRIMARY KEY(pro_id)
 );
-
-CREATE TABLE disciplina_projeto(
-  dip_disciplina BIGINT,
-  dip_projeto BIGINT,
-  
-  CONSTRAINT PRIMARY KEY(dip_disciplina, dip_projeto),
-  CONSTRAINT fk_dip_disciplina FOREIGN KEY(dip_disciplina)
-   REFERENCES disciplina(dis_id),
-  CONSTRAINT fk_dip_projeto FOREIGN KEY(dip_projeto)
-   REFERENCES projeto(pro_id)
-);
-
-CREATE TABLE projeto_equipe(
-  pre_projeto BIGINT,
-  pre_equipe BIGINT,
-
-  CONSTRAINT PRIMARY KEY(pre_projeto, pre_equipe),
-  CONSTRAINT fk_pre_projeto FOREIGN KEY(pre_projeto)
-   REFERENCES projeto(pro_id),
-  CONSTRAINT fk_pre_equipe FOREIGN KEY(pre_equipe)
-   REFERENCES equipe(equ_id)
-);   
+ 
 
 CREATE TABLE avaliacao (
   ava_id BIGINT AUTO_INCREMENT,
-  ava_sprint INTEGER NOT NULL,
-  ava_inicio DATE NOT NULL,
-  ava_termino DATE NOT NULL,
+  ava_sprint TINYINT NOT NULL,
+  ava_inicio DATE,
+  ava_termino DATE,
   ava_avaliado BIGINT,
   ava_avaliador BIGINT,
   ava_projeto BIGINT,
@@ -114,6 +70,7 @@ CREATE TABLE avaliacao (
    REFERENCES projeto(pro_id)
 );
 
+
 CREATE TABLE nota (
   not_id BIGINT AUTO_INCREMENT,
   not_avaliacao BIGINT,
@@ -124,3 +81,39 @@ CREATE TABLE nota (
   CONSTRAINT fk_not_avalaicao FOREIGN KEY(not_avaliacao)
    REFERENCES avaliacao(ava_id)
 );
+
+
+### TABELAS DE RELAÇÃO ###
+
+CREATE TABLE aluno_equipe (
+  ale_aluno BIGINT NOT NULL,
+  ale_equipe BIGINT NOT NULL,
+  
+  CONSTRAINT PRIMARY KEY(ale_aluno, ale_equipe),
+  CONSTRAINT fk_ale_aluno FOREIGN KEY(ale_aluno)
+    REFERENCES usuario(usu_id),
+  CONSTRAINT fk_ale_equipe FOREIGN KEY(ale_equipe)
+    REFERENCES equipe(equ_id)
+);
+
+CREATE TABLE disciplina_projeto(
+  dip_disciplina BIGINT,
+  dip_projeto BIGINT,
+  
+  CONSTRAINT PRIMARY KEY(dip_disciplina, dip_projeto),
+  CONSTRAINT fk_dip_disciplina FOREIGN KEY(dip_disciplina)
+    REFERENCES disciplina(dis_id),
+  CONSTRAINT fk_dip_projeto FOREIGN KEY(dip_projeto)
+    REFERENCES projeto(pro_id)
+);
+
+CREATE TABLE projeto_equipe(
+  pre_projeto BIGINT,
+  pre_equipe BIGINT,
+
+  CONSTRAINT PRIMARY KEY(pre_projeto, pre_equipe),
+  CONSTRAINT fk_pre_projeto FOREIGN KEY(pre_projeto)
+    REFERENCES projeto(pro_id),
+  CONSTRAINT fk_pre_equipe FOREIGN KEY(pre_equipe)
+    REFERENCES equipe(equ_id)
+);  
