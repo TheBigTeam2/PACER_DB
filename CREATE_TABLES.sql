@@ -71,15 +71,25 @@ CREATE TABLE avaliacao (
 );
 
 
+CREATE TABLE criterio (
+  cri_id BIGINT AUTO_INCREMENT,
+  cri_nome VARCHAR(32) NOT NULL,
+  
+  CONSTRAINT PRIMARY KEY(cri_id)
+);
+
+
 CREATE TABLE nota (
   not_id BIGINT AUTO_INCREMENT,
   not_avaliacao BIGINT,
-  not_criterio VARCHAR(32) NOT NULL,
+  not_criterio BIGINT,
   not_valor INTEGER NOT NULL,
   
   CONSTRAINT PRIMARY KEY(not_id),
   CONSTRAINT fk_not_avalaicao FOREIGN KEY(not_avaliacao)
-   REFERENCES avaliacao(ava_id)
+   REFERENCES avaliacao(ava_id),
+  CONSTRAINT fk_not_criterio FOREIGN KEY(not_criterio)
+   REFERENCES criterio(cri_id)
 );
 
 
