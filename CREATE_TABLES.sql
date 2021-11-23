@@ -11,6 +11,7 @@ CREATE TABLE usuario (
   usu_cpf VARCHAR(15) NOT NULL,
   usu_nome VARCHAR(128) NOT NULL,
   usu_auth VARCHAR(32) NOT NULL,
+  usu_senha VARCHAR(100) NOT NULL DEFAULT 'mudar!@#',
   
   CONSTRAINT PRIMARY KEY(usu_id),
   CONSTRAINT UK_USU_RG UNIQUE KEY(usu_rg),
